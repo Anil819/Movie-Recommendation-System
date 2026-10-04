@@ -1,6 +1,5 @@
 import os
 import pickle
-
 import pandas as pd
 import requests
 import streamlit as st
@@ -133,7 +132,7 @@ if st.button("Recommend Movies"):
     for col, name, poster in zip(cols, names, posters):
         with col:
             if poster:
-                st.image(poster, use_container_width=True)
-            st.markdown(f"**{name}**")
-            if not poster:
+                st.image(poster, width=180)
+            else:
                 st.write("Poster Not Available")
+            st.markdown(f"**{name}**")

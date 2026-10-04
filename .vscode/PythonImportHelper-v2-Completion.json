@@ -1,20 +1,11 @@
 [
     {
-        "label": "streamlit",
+        "label": "os",
         "kind": 6,
         "isExtraImport": true,
-        "importPath": "streamlit",
-        "description": "streamlit",
-        "detail": "streamlit",
-        "documentation": {}
-    },
-    {
-        "label": "pandas",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "pandas",
-        "description": "pandas",
-        "detail": "pandas",
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
         "documentation": {}
     },
     {
@@ -27,12 +18,30 @@
         "documentation": {}
     },
     {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
         "label": "requests",
         "kind": 6,
         "isExtraImport": true,
         "importPath": "requests",
         "description": "requests",
         "detail": "requests",
+        "documentation": {}
+    },
+    {
+        "label": "streamlit",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "streamlit",
+        "description": "streamlit",
+        "detail": "streamlit",
         "documentation": {}
     },
     {
@@ -48,7 +57,7 @@
         "kind": 2,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "def fetch_poster(movie_title):\n    url = \"https://www.omdbapi.com/\"\n    params = {\n        \"t\": movie_title,\n        \"apikey\": OMDB_API_KEY,\n        \"type\": \"movie\"\n    }\n    try:\n        response = requests.get(\n            url,",
+        "peekOfCode": "def fetch_poster(movie_title):\n    if not OMDB_API_KEY:\n        return None\n    try:\n        response = requests.get(\n            \"https://www.omdbapi.com/\",\n            params={\n                \"apikey\": OMDB_API_KEY,\n                \"t\": str(movie_title).strip(),\n            },",
         "detail": "app",
         "documentation": {}
     },
@@ -57,7 +66,7 @@
         "kind": 2,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "def load_data():\n    with open(\"movies_dict.pkl\", \"rb\") as file:\n        movies_dict = pickle.load(file)\n    movies = pd.DataFrame(movies_dict)\n    similarity_path = hf_hub_download(\n        repo_id=HF_REPO_ID,\n        filename=\"similarity.pkl\",\n        repo_type=\"model\"\n    )\n    with open(similarity_path, \"rb\") as file:",
+        "peekOfCode": "def load_data():\n    base_dir = os.path.dirname(os.path.abspath(__file__))\n    movies_path = os.path.join(base_dir, \"movies_dict.pkl\")\n    similarity_path = os.path.join(base_dir, \"similarity.pkl\")\n    if not os.path.exists(movies_path):\n        raise FileNotFoundError(f\"Missing file: {movies_path}\")\n    with open(movies_path, \"rb\") as file:\n        movies_dict = pickle.load(file)\n    movies = pd.DataFrame(movies_dict)\n    if not os.path.exists(similarity_path):",
         "detail": "app",
         "documentation": {}
     },
@@ -66,16 +75,7 @@
         "kind": 2,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "def recommend(movie):\n    movie_index = movies[movies[\"title\"] == movie].index[0]\n    distances = similarity[movie_index]\n    movies_list = sorted(\n        list(enumerate(distances)),\n        reverse=True,\n        key=lambda x: x[1]\n    )[1:6]\n    recommended_movies = []\n    recommended_movies_posters = []",
-        "detail": "app",
-        "documentation": {}
-    },
-    {
-        "label": "OMDB_API_KEY",
-        "kind": 5,
-        "importPath": "app",
-        "description": "app",
-        "peekOfCode": "OMDB_API_KEY = \"OMDB_API_KEY\"\nHF_REPO_ID = \"anilohar2325/movie-recommendation-model\"\n@st.cache_data(ttl=3600)\ndef fetch_poster(movie_title):\n    url = \"https://www.omdbapi.com/\"\n    params = {\n        \"t\": movie_title,\n        \"apikey\": OMDB_API_KEY,\n        \"type\": \"movie\"\n    }",
+        "peekOfCode": "def recommend(movie):\n    movie_index = movies[movies[\"title\"] == movie].index[0]\n    distances = similarity[movie_index]\n    movies_list = sorted(\n        list(enumerate(distances)),\n        reverse=True,\n        key=lambda x: x[1],\n    )[1:6]\n    recommended_movies = []\n    recommended_movies_posters = []",
         "detail": "app",
         "documentation": {}
     },
@@ -84,7 +84,7 @@
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "HF_REPO_ID = \"anilohar2325/movie-recommendation-model\"\n@st.cache_data(ttl=3600)\ndef fetch_poster(movie_title):\n    url = \"https://www.omdbapi.com/\"\n    params = {\n        \"t\": movie_title,\n        \"apikey\": OMDB_API_KEY,\n        \"type\": \"movie\"\n    }\n    try:",
+        "peekOfCode": "HF_REPO_ID = \"anilohar2325/movie-recommendation-model\"\n@st.cache_data(ttl=3600)\ndef fetch_poster(movie_title):\n    if not OMDB_API_KEY:\n        return None\n    try:\n        response = requests.get(\n            \"https://www.omdbapi.com/\",\n            params={\n                \"apikey\": OMDB_API_KEY,",
         "detail": "app",
         "documentation": {}
     },
@@ -93,7 +93,25 @@
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "selected_movie_name = st.selectbox(\n    \"Choose a movie\",\n    movies[\"title\"].values\n)\nif st.button(\"Recommend Movies\"):\n    with st.spinner(\"Finding recommended movies...\"):\n        names, posters = recommend(\n            selected_movie_name\n        )\n    cols = st.columns(5)",
+        "peekOfCode": "selected_movie_name = st.selectbox(\n    \"Choose a movie\",\n    movies[\"title\"].values,\n)\nnames = []\nposters = []\nif st.button(\"Recommend Movies\"):\n    with st.spinner(\"Finding recommended movies...\"):\n        names, posters = recommend(selected_movie_name)\n    cols = st.columns(5)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "names",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "names = []\nposters = []\nif st.button(\"Recommend Movies\"):\n    with st.spinner(\"Finding recommended movies...\"):\n        names, posters = recommend(selected_movie_name)\n    cols = st.columns(5)\n    for col, name, poster in zip(cols, names, posters):\n        with col:\n            if poster:\n                st.image(poster, width=180)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "posters",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "posters = []\nif st.button(\"Recommend Movies\"):\n    with st.spinner(\"Finding recommended movies...\"):\n        names, posters = recommend(selected_movie_name)\n    cols = st.columns(5)\n    for col, name, poster in zip(cols, names, posters):\n        with col:\n            if poster:\n                st.image(poster, width=180)\n            else:",
         "detail": "app",
         "documentation": {}
     }
