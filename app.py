@@ -9,8 +9,7 @@ st.set_page_config(
     page_icon="🎬",
     layout="wide"
 )
-OMDB_API_KEY = st.secrets["OMDB_API_KEY"]
-
+OMDB_API_KEY = "OMDB_API_KEY"
 HF_REPO_ID = "anilohar2325/movie-recommendation-model"
 
 

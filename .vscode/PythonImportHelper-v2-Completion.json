@@ -1,0 +1,100 @@
+[
+    {
+        "label": "streamlit",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "streamlit",
+        "description": "streamlit",
+        "detail": "streamlit",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "pickle",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pickle",
+        "description": "pickle",
+        "detail": "pickle",
+        "documentation": {}
+    },
+    {
+        "label": "requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests",
+        "description": "requests",
+        "detail": "requests",
+        "documentation": {}
+    },
+    {
+        "label": "hf_hub_download",
+        "importPath": "huggingface_hub",
+        "description": "huggingface_hub",
+        "isExtraImport": true,
+        "detail": "huggingface_hub",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_poster",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def fetch_poster(movie_title):\n    url = \"https://www.omdbapi.com/\"\n    params = {\n        \"t\": movie_title,\n        \"apikey\": OMDB_API_KEY,\n        \"type\": \"movie\"\n    }\n    try:\n        response = requests.get(\n            url,",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "load_data",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def load_data():\n    with open(\"movies_dict.pkl\", \"rb\") as file:\n        movies_dict = pickle.load(file)\n    movies = pd.DataFrame(movies_dict)\n    similarity_path = hf_hub_download(\n        repo_id=HF_REPO_ID,\n        filename=\"similarity.pkl\",\n        repo_type=\"model\"\n    )\n    with open(similarity_path, \"rb\") as file:",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "recommend",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def recommend(movie):\n    movie_index = movies[movies[\"title\"] == movie].index[0]\n    distances = similarity[movie_index]\n    movies_list = sorted(\n        list(enumerate(distances)),\n        reverse=True,\n        key=lambda x: x[1]\n    )[1:6]\n    recommended_movies = []\n    recommended_movies_posters = []",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "OMDB_API_KEY",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "OMDB_API_KEY = \"OMDB_API_KEY\"\nHF_REPO_ID = \"anilohar2325/movie-recommendation-model\"\n@st.cache_data(ttl=3600)\ndef fetch_poster(movie_title):\n    url = \"https://www.omdbapi.com/\"\n    params = {\n        \"t\": movie_title,\n        \"apikey\": OMDB_API_KEY,\n        \"type\": \"movie\"\n    }",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "HF_REPO_ID",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "HF_REPO_ID = \"anilohar2325/movie-recommendation-model\"\n@st.cache_data(ttl=3600)\ndef fetch_poster(movie_title):\n    url = \"https://www.omdbapi.com/\"\n    params = {\n        \"t\": movie_title,\n        \"apikey\": OMDB_API_KEY,\n        \"type\": \"movie\"\n    }\n    try:",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "selected_movie_name",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "selected_movie_name = st.selectbox(\n    \"Choose a movie\",\n    movies[\"title\"].values\n)\nif st.button(\"Recommend Movies\"):\n    with st.spinner(\"Finding recommended movies...\"):\n        names, posters = recommend(\n            selected_movie_name\n        )\n    cols = st.columns(5)",
+        "detail": "app",
+        "documentation": {}
+    }
+]
