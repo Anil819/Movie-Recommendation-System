@@ -1,0 +1,5 @@
+similarity.pkl
+movies.pkl
+.streamlit/secrets.toml
+__pycache__/
+*.pyc
